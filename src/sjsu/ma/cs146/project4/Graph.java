@@ -222,7 +222,8 @@ public class Graph {
 //    			vertexList[i][j].color = 0;
 //    		}
 //    	}
-    	graphReset();
+//    	graphReset();
+//    	populateGraph();
     	time = 0; //instance variable
     	for (int i = 0; i < dimension; i++){
     		for (int j = 0; j < dimension; j++){
@@ -236,8 +237,8 @@ public class Graph {
     
     public void BFS(Vertex s){
 	    
-    	graphReset();
-    	generateMaze();
+//    	graphReset();
+//    	populateGraph();
     	Queue<Vertex> q = new LinkedList<>();
     	q.add(s);
     	while (!q.isEmpty()){
@@ -352,6 +353,8 @@ public class Graph {
 				make it CurrentCell
 		 */
 
+    	graphReset();
+    	populateGraph();
     	startVertex.walls[0] = 4;
     	endVertex.walls[2] = 4;
         Stack<Vertex> cellStack = new Stack<>();
@@ -465,11 +468,7 @@ public class Graph {
         return toReturn;
     }
     
-   
-
-
-    
-    
+       
     /*
      * Slightly more complicated in order to print the grid in a way that makes it easy to read
      * Prints all the top walls, the left and right, and the bottom row
@@ -559,10 +558,8 @@ public class Graph {
                 grid += "\n";
             }
         }
-
         return grid;
     }
-    
     
     
     /*
@@ -575,8 +572,7 @@ public class Graph {
         //first print the top layer
 
         int n = 2;
-        for(int i = 0; i < dimension; i++)
-        {
+        for(int i = 0; i < dimension; i++) {
             if(i == dimension-1)
                 n = 3;
             for(int layer = 1; layer <= n; layer++) {
@@ -625,9 +621,9 @@ public class Graph {
 //                    		grid += " ";
 //                    	} else {    
                     	if (v.pi == null){ //don't print label
-                    		grid += " ";
+                    		grid += "0";
                     	} else {
-                    		grid += ((v.pi.label));
+                    		grid += ((v.pi.label)%10);
                     	}
                         //grid += " ";
                     	
@@ -660,8 +656,7 @@ public class Graph {
 
         return grid;
     }
-    
-    
+     
 
     public static void main(String[] args) {
         Graph g = new Graph(4);
@@ -687,12 +682,14 @@ public class Graph {
         System.out.println();
         System.out.println("DFS");
         System.out.println(aGrid);
-//        
-//        g.BFS(g.vertexList[0][0]);
-//        String bGrid = g.printGrid1();
-//        System.out.println();
-//        System.out.println("BFS");
-//        System.out.println(bGrid);
+        
+        Graph g1 = new Graph(4);
+        g1.generateMaze();
+        g1.BFS(g1.vertexList[0][0]);
+        String bGrid = g1.printGrid1();
+        System.out.println();
+        System.out.println("BFS");
+        System.out.println(bGrid);
         
 //        for (int i = 0; i < g.dimension; i++) {
 //          for (int j = 0; j < g.dimension; j++) {
