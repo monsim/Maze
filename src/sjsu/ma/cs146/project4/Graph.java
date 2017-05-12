@@ -35,6 +35,7 @@ public class Graph {
         int startTime;	//found time when it turns grey
         int endTime;	//when it turns black
         int distance;  //ADDED
+        int traverseOrder; 
         
 		/*
 		 * array of walls. -1 representing edge of maze, 0 broken wall (no wall), and 1 intact wall, and 4 representing entry/exit
@@ -64,6 +65,8 @@ public class Graph {
             endTime = Integer.MAX_VALUE;
             pi = null;
             distance = 0; //ADDED
+            traverseOrder = 0; 
+            
         }
 
         public boolean allWallsIntact(){
@@ -148,6 +151,7 @@ public class Graph {
     private Vertex startVertex;
     private Vertex endVertex;
     int time;
+    int[] traversed;
 
     /**
      * Constructor for this program takes in the dimensions of the maze It also
@@ -176,6 +180,7 @@ public class Graph {
         startVertex = vertexList[0][0];	//set startVertex to top left
         endVertex = vertexList[dimension-1][dimension-1];	//set endVertex to bottom right
         //populateGraph();
+        traversed = new int[dimension*dimension];
     }
     
     /*
@@ -197,7 +202,7 @@ public class Graph {
     }
   
     
-    public void DFS_Visit(Vertex u){
+    public void DFS_Visit(Vertex u, int traverseO){
     	u.color = 1;
     	
     	time++;
@@ -207,7 +212,18 @@ public class Graph {
     		int direction = u.vertexRelationship(v); //relationship between u and v
     		if((v != null) && v.color == 0 && (u.walls[direction] == 0)){
     			v.pi = u;
-    			DFS_Visit(v);
+    			if (v.traverseOrder == 0){
+    				if (traversed[traverseO] == 0){
+    					v.traverseOrder = traverseO;
+    					traversed[traverseO] = 1;
+    				} else {
+    					traverseO++;
+    					v.traverseOrder = traverseO;
+    					traversed[traverseO] = 1;
+    				}
+    			}
+    			traverseO++;
+    			DFS_Visit(v, traverseO);
     		}
     	}
     	u.color = 2;
@@ -217,6 +233,7 @@ public class Graph {
     }
     
     public void DFS(){
+    	int traverse = 0;
 //    	for (int i = 0; i < dimension; i++){
 //    		for (int j = 0; j < dimension; j++){
 //    			vertexList[i][j].color = 0;
@@ -228,7 +245,7 @@ public class Graph {
     	for (int i = 0; i < dimension; i++){
     		for (int j = 0; j < dimension; j++){
     			if (vertexList[i][j].color == 0 && !vertexList[i][j].equals(endVertex)){
-    				DFS_Visit(vertexList[i][j]);
+    				DFS_Visit(vertexList[i][j], traverse);
     			}
     		}
     	}
@@ -240,6 +257,7 @@ public class Graph {
 //    	graphReset();
 //    	populateGraph();
     	Queue<Vertex> q = new LinkedList<>();
+    	int traverse = 0;
     	q.add(s);
     	while (!q.isEmpty() && !q.peek().equals(endVertex)){
     		Vertex u = q.remove();
@@ -262,9 +280,13 @@ public class Graph {
     //	    			System.out.println(u.walls[direction]);
 	    			if ((u.walls[direction] == 0) && v != null && v.color == 0){ 
 	//    				System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+	    				if (u.traverseOrder == 0){
+	    					u.traverseOrder = traverse;
+	    				}
+	    				traverse++;
+	    				v.pi = u;
 	    				v.color = 1;
 	    				v.distance = u.distance + 1; 
-	    				v.pi = u;
 	    				q.add(v);
 	    			}
     			//}
@@ -528,7 +550,8 @@ public class Graph {
                     	if (v.startTime > 1000){
                     		grid += " ";
                     	} else {                        //don't print label
-                    		grid += (v.startTime%10);
+                    		//grid += (v.startTime%10);
+                    		grid += (v.traverseOrder%10);
                     	}
                         //grid += " ";
                     	
@@ -623,7 +646,8 @@ public class Graph {
                     	if (v.pi == null){ //don't print label
                     		grid += " ";
                     	} else {
-                    		grid += ((v.distance));
+                    		//grid += ((v.distance));
+                    		grid += ((v.pi.traverseOrder)%10);
                     	}
                         //grid += " ";
                     	
@@ -657,6 +681,10 @@ public class Graph {
         return grid;
     }
      
+    
+//    public String printX(String solved){
+//    	while ()
+//    }
 
     public static void main(String[] args) {
         Graph g = new Graph(4);
@@ -690,19 +718,6 @@ public class Graph {
         System.out.println();
         System.out.println("BFS");
         System.out.println(bGrid);
-        
-//        for (int i = 0; i < g.dimension; i++) {
-//          for (int j = 0; j < g.dimension; j++) {
-//              System.out.println("start: " + g.vertexList[i][j].startTime);
-//              
-//              System.out.println("end: " + g.vertexList[i][j].endTime);
-//              
-//              if (g.vertexList[i][j].pi != null){
-//            	  System.out.println("parent: " + g.vertexList[i][j].pi.label + "\n");
-//              }
-//          }
-//          System.out.println();
-//        }
     }
 }
 
