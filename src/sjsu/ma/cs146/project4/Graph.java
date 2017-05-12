@@ -175,14 +175,14 @@ public class Graph {
         myRandGen = new java.util.Random(0);	//seed	is	0
         startVertex = vertexList[0][0];	//set startVertex to top left
         endVertex = vertexList[dimension-1][dimension-1];	//set endVertex to bottom right
-        populateGraph();
+        //populateGraph();
     }
     
     /*
      * makes all vertices in vertex list to white (0)
      */
     public void graphReset(){
-    	populateGraph();
+//    	populateGraph();
     	for (int i = 0; i < dimension; i++){
     		for (int j = 0; j < dimension; j++){
     			vertexList[i][j].color = 0;
@@ -227,7 +227,7 @@ public class Graph {
     	time = 0; //instance variable
     	for (int i = 0; i < dimension; i++){
     		for (int j = 0; j < dimension; j++){
-    			if (vertexList[i][j].color == 0){
+    			if (vertexList[i][j].color == 0 && !vertexList[i][j].equals(endVertex)){
     				DFS_Visit(vertexList[i][j]);
     			}
     		}
@@ -241,13 +241,13 @@ public class Graph {
 //    	populateGraph();
     	Queue<Vertex> q = new LinkedList<>();
     	q.add(s);
-    	while (!q.isEmpty()){
+    	while (!q.isEmpty() && !q.peek().equals(endVertex)){
     		Vertex u = q.remove();
     		for (int i = 0; i < u.neighbors.length; i++){
     			Vertex v = u.neighbors[i];
-    			System.out.println("before");
+  //  			System.out.println("before");
     			//if (v != null) {
-    				System.out.println("inside if");
+    //				System.out.println("inside if");
 	 //   			System.out.println(u.neighbors.length);
 	//    			if (v != null){
 	//    				System.out.println("H");
@@ -257,13 +257,13 @@ public class Graph {
 	//    				break;
 	//    			}
 	    			int direction = u.vertexRelationship(v);
-	    			System.out.println("direction: " + direction);
-	    			System.out.println("label: " + u.label);
-	    			System.out.println(u.walls[direction]);
+	//    			System.out.println("direction: " + direction);
+	//    			System.out.println("label: " + u.label);
+    //	    			System.out.println(u.walls[direction]);
 	    			if ((u.walls[direction] == 0) && v != null && v.color == 0){ 
-	    				System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+	//    				System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 	    				v.color = 1;
-	    				v.distance = u.distance + 1; //CHECK ADDED
+	    				v.distance = u.distance + 1; 
 	    				v.pi = u;
 	    				q.add(v);
 	    			}
@@ -621,9 +621,9 @@ public class Graph {
 //                    		grid += " ";
 //                    	} else {    
                     	if (v.pi == null){ //don't print label
-                    		grid += "0";
+                    		grid += " ";
                     	} else {
-                    		grid += ((v.pi.label)%10);
+                    		grid += ((v.distance));
                     	}
                         //grid += " ";
                     	
