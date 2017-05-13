@@ -29,6 +29,7 @@ public class Graph {
 		int endTime; // when it turns black
 		int distance; // ADDED
 		boolean inPath; 
+		int traverseOrder;
 
 		/*
 		 * array of walls. -1 representing edge of maze, 0 broken wall (no
@@ -53,6 +54,7 @@ public class Graph {
 			pi = null;
 			distance = 0; // ADDED
 			inPath = false;
+			traverseOrder = 0;
 		}
 
 		public boolean allWallsIntact() {
@@ -149,7 +151,8 @@ public class Graph {
 	private Vertex startVertex;
 	private Vertex endVertex;
 	int time;
-
+	int[] traversed;
+	
 	/**
 	 * Constructor for this program takes in the dimensions of the maze It also
 	 * makes the seed of the random generator 0 for easier testing
@@ -177,9 +180,8 @@ public class Graph {
 		amountVertices = dimension * dimension;
 		myRandGen = new java.util.Random(0); // seed is 0
 		startVertex = vertexList[0][0]; // set startVertex to top left
-		endVertex = vertexList[dimension - 1][dimension - 1]; // set endVertex
-																// to bottom
-																// right
+		endVertex = vertexList[dimension - 1][dimension - 1]; // set endVertex to bottom right
+		traversed = new int[dimension*dimension];
 		// populateGraph();
 	}
 
@@ -187,12 +189,13 @@ public class Graph {
 	
 	public void setPath(){
 		Vertex current = vertexList[dimension-1][dimension-1];
-		System.out.println("PARENT OF " + vertexList[1][3].label + " IS: " + vertexList[1][3].pi.label);
-		System.out.println("PARENT OF " + vertexList[1][2].label + " IS: " + vertexList[1][2].pi.label);
+//		System.out.println("PARENT OF " + vertexList[1][3].label + " IS: " + vertexList[1][3].pi.label);
+//		System.out.println("PARENT OF " + vertexList[1][2].label + " IS: " + vertexList[1][2].pi.label);
 		while (current != null){
 			current.inPath = true;
 			current = current.pi;
 		}
+		vertexList[0][0].inPath = true;
 	}
 	
 	
@@ -256,6 +259,7 @@ public class Graph {
 
 		// graphReset();
 		// populateGraph();
+		int traverseO = 1;
 		Queue<Vertex> q = new LinkedList<>();
 		q.add(s);
 		while (!q.isEmpty() && !q.peek().equals(endVertex)) {
@@ -265,6 +269,16 @@ public class Graph {
 				int direction = u.vertexRelationship(v);
 				if ((u.walls[direction] == 0) && v != null && v.color == 0) {
 					v.color = 1;
+					if (v.traverseOrder == 0){
+	    				if (traversed[traverseO] == 0){
+	    					v.traverseOrder = traverseO;
+	    					traversed[traverseO] = 1;
+	    				} else {
+	    					traverseO++;
+	    					v.traverseOrder = traverseO;
+	    					traversed[traverseO] = 1;
+	    				}
+	    			}
 					v.distance = u.distance + 1;
 					v.pi = u;
 					q.add(v);
@@ -484,7 +498,7 @@ public class Graph {
 						if (v.startTime > 1000) {
 							grid += " ";
 						} else { // don't print label
-							grid += (v.startTime % 10);
+							grid += ((v.startTime % 10)-1);
 						}
 						// grid += " ";
 
@@ -586,7 +600,7 @@ public class Graph {
 						if (v.pi == null) { // don't print label
 							grid += " ";
 						} else {
-							grid += ((v.pi.label));
+							grid += ((v.traverseOrder)%10);
 						}
 						// grid += " ";
 
@@ -686,7 +700,7 @@ public class Graph {
 						// } else {
 						if (v.pi == null) { // don't print label
 							grid += " ";
-						} else if (v.pi.inPath){
+						} else if (v.inPath){
 							grid += (("#"));
 						} else {
 							grid += " ";
@@ -707,6 +721,8 @@ public class Graph {
 
 						if ((v.walls[2] != 0) && (v.walls[2] != 4)) // if -1, edge wall; if 1, inner wall, 0 is broken wall, 4 is entry/exit
 							grid += "-";
+						else if (v.inPath)
+							grid += "#";
 						else
 							grid += " ";
 
@@ -733,16 +749,16 @@ public class Graph {
 //	}
 	
 	public static void main(String[] args) {
-//		Graph g = new Graph(4);
-//		g.generateMaze();
-//		System.out.println("Grid: ");
-//		String grid = g.printGrid();
-//		System.out.println(grid);
-//		g.DFS();
-//		String aGrid = g.printGrid();
-//		System.out.println();
-//		System.out.println("DFS");
-//		System.out.println(aGrid);
+		Graph g = new Graph(4);
+		g.generateMaze();
+		System.out.println("Grid: ");
+		String grid = g.printGrid();
+		System.out.println(grid);
+		g.DFS();
+		String aGrid = g.printGrid();
+		System.out.println();
+		System.out.println("DFS");
+		System.out.println(aGrid);
 
 		Graph g1 = new Graph(4);
 		g1.generateMaze();
@@ -752,9 +768,9 @@ public class Graph {
 		System.out.println("BFS");
 		System.out.println(bGrid);
 		g1.setPath();
-		String dGrid = g1.printGrid1();
-		System.out.println("Parents: ");
-		System.out.println(dGrid);
+//		String dGrid = g1.printGrid1();
+//		System.out.println("Parents: ");
+//		System.out.println(dGrid);
 		String cGrid = g1.printGrid2();
 		System.out.println();
 		System.out.println(cGrid);
