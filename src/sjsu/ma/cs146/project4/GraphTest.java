@@ -27,6 +27,26 @@ public class GraphTest {
 		assertEquals(dGrid, cGrid);
 	}
 	
+	@Test
+	public void testCompare5By5(){
+		Graph g = new Graph(5);
+		g.generateMaze();
+		String grid = g.printGrid();
+		g.DFS();
+		String aGrid = g.printGrid();
+		g.setPath();
+		String dGrid = g.printGrid2();
+		
+		Graph g1 = new Graph(5);
+		g1.generateMaze();
+		g1.BFS(g1.vertexList[0][0]);
+		String bGrid = g1.printGrid1();
+		g1.setPath();
+		String cGrid = g1.printGrid2();
+		
+		assertEquals(dGrid, cGrid);
+	}
+	
 	
 	@Test
 	public void testCompare6By6(){
@@ -39,6 +59,26 @@ public class GraphTest {
 		String dGrid = g.printGrid2();
 		
 		Graph g1 = new Graph(6);
+		g1.generateMaze();
+		g1.BFS(g1.vertexList[0][0]);
+		String bGrid = g1.printGrid1();
+		g1.setPath();
+		String cGrid = g1.printGrid2();
+		
+		assertEquals(dGrid, cGrid);
+	}
+	
+	@Test
+	public void testCompare7By7(){
+		Graph g = new Graph(7);
+		g.generateMaze();
+		String grid = g.printGrid();
+		g.DFS();
+		String aGrid = g.printGrid();
+		g.setPath();
+		String dGrid = g.printGrid2();
+		
+		Graph g1 = new Graph(7);
 		g1.generateMaze();
 		g1.BFS(g1.vertexList[0][0]);
 		String bGrid = g1.printGrid1();
@@ -67,6 +107,26 @@ public class GraphTest {
 		
 		assertEquals(dGrid, cGrid);
 	}	
+	
+	@Test
+	public void testCompare10By10(){
+		Graph g = new Graph(10);
+		g.generateMaze();
+		String grid = g.printGrid();
+		g.DFS();
+		String aGrid = g.printGrid();
+		g.setPath();
+		String dGrid = g.printGrid2();
+		
+		Graph g1 = new Graph(10);
+		g1.generateMaze();
+		g1.BFS(g1.vertexList[0][0]);
+		String bGrid = g1.printGrid1();
+		g1.setPath();
+		String cGrid = g1.printGrid2();
+		
+		assertEquals(dGrid, cGrid);
+	}
 	
 	/*
 	 * test vertex constructor
