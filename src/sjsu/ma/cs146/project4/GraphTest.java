@@ -6,25 +6,67 @@ import org.junit.Test;
 
 public class GraphTest {
 
+	
 	@Test
-	public void testGraph() {
-		fail("Not yet implemented");
+	public void testCompare4By4(){
+		Graph g = new Graph(4);
+		g.generateMaze();
+		String grid = g.printGrid();
+		g.DFS();
+		String aGrid = g.printGrid();
+		g.setPath();
+		String dGrid = g.printGrid2();
+		
+		Graph g1 = new Graph(4);
+		g1.generateMaze();
+		g1.BFS(g1.vertexList[0][0]);
+		String bGrid = g1.printGrid1();
+		g1.setPath();
+		String cGrid = g1.printGrid2();
+		
+		assertEquals(dGrid, cGrid);
 	}
-
+	
+	
 	@Test
-	public void testPopulateGraph() {
-		fail("Not yet implemented");
+	public void testCompare6By6(){
+		Graph g = new Graph(6);
+		g.generateMaze();
+		String grid = g.printGrid();
+		g.DFS();
+		String aGrid = g.printGrid();
+		g.setPath();
+		String dGrid = g.printGrid2();
+		
+		Graph g1 = new Graph(6);
+		g1.generateMaze();
+		g1.BFS(g1.vertexList[0][0]);
+		String bGrid = g1.printGrid1();
+		g1.setPath();
+		String cGrid = g1.printGrid2();
+		
+		assertEquals(dGrid, cGrid);
 	}
-
+	
 	@Test
-	public void testMyRandom() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGenerateMaze() {
-		fail("Not yet implemented");
-	}
+	public void testCompare8By8(){
+		Graph g = new Graph(8);
+		g.generateMaze();
+		String grid = g.printGrid();
+		g.DFS();
+		String aGrid = g.printGrid();
+		g.setPath();
+		String dGrid = g.printGrid2();
+		
+		Graph g1 = new Graph(8);
+		g1.generateMaze();
+		g1.BFS(g1.vertexList[0][0]);
+		String bGrid = g1.printGrid1();
+		g1.setPath();
+		String cGrid = g1.printGrid2();
+		
+		assertEquals(dGrid, cGrid);
+	}	
 	
 	/*
 	 * test vertex constructor
@@ -141,13 +183,11 @@ public class GraphTest {
 		g.populateGraph();
 		
 		String before = g.printGrid();
-		//g.generateMaze();
+		g.generateMaze();
 		Graph.Vertex v = g.vertexList[1][1]; 
 		v.breakDownWall();
 		String after = g.printGrid();
 		
-		System.out.println(before);
-		System.out.println(after);
 		assertNotEquals(before, after);
 		
 		/*
