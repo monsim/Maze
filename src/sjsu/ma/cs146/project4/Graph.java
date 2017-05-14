@@ -245,7 +245,7 @@ public class Graph {
 		// }
 		// graphReset();
 		// populateGraph();
-		time = 0; // instance variable
+		time = -1; // instance variable
 		for (int i = 0; i < dimension; i++) {
 			for (int j = 0; j < dimension; j++) {
 				if (vertexList[i][j].color == 0 && !vertexList[i][j].equals(endVertex)) {
@@ -498,7 +498,7 @@ public class Graph {
 						if (v.startTime > 1000) {
 							grid += " ";
 						} else { // don't print label
-							grid += ((v.startTime % 10)-1);
+							grid += ((v.startTime % 10));
 						}
 						// grid += " ";
 
@@ -571,13 +571,7 @@ public class Graph {
 					// prints according to the layer
 					// layer one --> print up
 					if (layer == 1) {
-						if ((v.walls[0] != 0) && (v.walls[0] != 4)) // if -1,
-																	// edge
-																	// wall; if
-																	// 1, inner
-																	// wall, 0
-																	// is broken
-																	// wall
+						if ((v.walls[0] != 0) && (v.walls[0] != 4)) // if -1, edge wall; if 1, inner wall, 0 is broken
 							grid += "-";
 						else
 							grid += " ";
@@ -587,17 +581,12 @@ public class Graph {
 
 					// layer two --> print left/right and label
 					else if (layer == 2) {
-						// if(v.walls[3] != 0) //if there is a left wall - 3
-						// grid += "|";
-						// else
-						// grid += " ";
 
 						// print label
-						// grid += v.label;
-						// if (v.startTime > 1000){
-						// grid += " ";
-						// } else {
-						if (v.pi == null) { // don't print label
+						
+						if ((v != null) && v == (vertexList[0][0])){
+							grid += "0";
+						} else if (v.pi == null) { // don't print label
 							grid += " ";
 						} else {
 							grid += ((v.traverseOrder)%10);
@@ -677,7 +666,10 @@ public class Graph {
 					if (layer == 1) {
 						if ((v.walls[0] != 0) && (v.walls[0] != 4)) // if -1, edge wall; if 1 inner wall if 0 broken wall														// wall
 							grid += "-";
-						else if (v.inPath)
+						else if (v.equals(startVertex)){
+							grid += "#";
+						}
+						else if (v.inPath && v.getUp() != null && v.getUp().inPath)
 							grid += "#";
 						else {
 							grid += " ";
@@ -688,17 +680,7 @@ public class Graph {
 
 					// layer two --> print left/right and label
 					else if (layer == 2) {
-						// if(v.walls[3] != 0) //if there is a left wall - 3
-						// grid += "|";
-						// else
-						// grid += " ";
-
-						// print label
-						// grid += v.label;
-						// if (v.startTime > 1000){
-						// grid += " ";
-						// } else {
-						if (v.pi == null) { // don't print label
+						if (v == null) { // don't print label
 							grid += " ";
 						} else if (v.inPath){
 							grid += (("#"));
@@ -721,7 +703,7 @@ public class Graph {
 
 						if ((v.walls[2] != 0) && (v.walls[2] != 4)) // if -1, edge wall; if 1, inner wall, 0 is broken wall, 4 is entry/exit
 							grid += "-";
-						else if (v.inPath)
+						else if (v.inPath) 
 							grid += "#";
 						else
 							grid += " ";
@@ -740,16 +722,8 @@ public class Graph {
 	}
 	
 	
-//	public String printPounds(){
-//		String grid = "";
-//		Vertex current = vertexList[dimension-1][dimension-1];
-//		while (current.pi != null){
-//			
-//		}
-//	}
-	
 	public static void main(String[] args) {
-		Graph g = new Graph(4);
+		Graph g = new Graph(8);
 		g.generateMaze();
 		System.out.println("Grid: ");
 		String grid = g.printGrid();
@@ -759,8 +733,13 @@ public class Graph {
 		System.out.println();
 		System.out.println("DFS");
 		System.out.println(aGrid);
+		g.setPath();
+		String dGrid = g.printGrid2();
+		System.out.println();
+		System.out.println(dGrid);
+		
 
-		Graph g1 = new Graph(4);
+		Graph g1 = new Graph(8);
 		g1.generateMaze();
 		g1.BFS(g1.vertexList[0][0]);
 		String bGrid = g1.printGrid1();
@@ -768,9 +747,6 @@ public class Graph {
 		System.out.println("BFS");
 		System.out.println(bGrid);
 		g1.setPath();
-//		String dGrid = g1.printGrid1();
-//		System.out.println("Parents: ");
-//		System.out.println(dGrid);
 		String cGrid = g1.printGrid2();
 		System.out.println();
 		System.out.println(cGrid);
