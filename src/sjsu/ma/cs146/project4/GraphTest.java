@@ -12,7 +12,7 @@ public class GraphTest {
 		Graph g = new Graph(4);
 		g.generateMaze();
 		String grid = g.printGrid();
-		g.DFS();
+		g.DFS(g.vertexList[0][0]);
 		String aGrid = g.printGrid();
 		g.setPath();
 		String dGrid = g.printGrid2();
@@ -32,7 +32,7 @@ public class GraphTest {
 		Graph g = new Graph(5);
 		g.generateMaze();
 		String grid = g.printGrid();
-		g.DFS();
+		g.DFS(g.vertexList[0][0]);
 		String aGrid = g.printGrid();
 		g.setPath();
 		String dGrid = g.printGrid2();
@@ -53,7 +53,7 @@ public class GraphTest {
 		Graph g = new Graph(6);
 		g.generateMaze();
 		String grid = g.printGrid();
-		g.DFS();
+		g.DFS(g.vertexList[0][0]);
 		String aGrid = g.printGrid();
 		g.setPath();
 		String dGrid = g.printGrid2();
@@ -73,7 +73,7 @@ public class GraphTest {
 		Graph g = new Graph(7);
 		g.generateMaze();
 		String grid = g.printGrid();
-		g.DFS();
+		g.DFS(g.vertexList[0][0]);
 		String aGrid = g.printGrid();
 		g.setPath();
 		String dGrid = g.printGrid2();
@@ -93,7 +93,7 @@ public class GraphTest {
 		Graph g = new Graph(8);
 		g.generateMaze();
 		String grid = g.printGrid();
-		g.DFS();
+		g.DFS(g.vertexList[0][0]);
 		String aGrid = g.printGrid();
 		g.setPath();
 		String dGrid = g.printGrid2();
@@ -113,7 +113,7 @@ public class GraphTest {
 		Graph g = new Graph(10);
 		g.generateMaze();
 		String grid = g.printGrid();
-		g.DFS();
+		g.DFS(g.vertexList[0][0]);
 		String aGrid = g.printGrid();
 		g.setPath();
 		String dGrid = g.printGrid2();

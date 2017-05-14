@@ -212,41 +212,37 @@ public class Graph {
 		startVertex.walls[0] = 4; //sets startVertex up wall as entry point
 		endVertex.walls[2] = 4; //sets endVertex down wall as exit point
 	}
-
-	/*
-	 * recursive helper method used for dfs
-	 */
-	public void DFS_Visit(Vertex u) {
-		u.color = 1; //set to grey
-
-		time++;
-		u.startTime = time;
-		for (int i = 0; i < u.neighbors.length; i++) {
-			Vertex v = u.neighbors[i];
-			int direction = u.vertexRelationship(v); // relationship between u and v
-			if ((v != null) && v.color == 0 && (u.walls[direction] == 0)) { //if node hasn't been visited and walls is not intact
-				v.pi = u;
-				DFS_Visit(v);
-			}
-		}
-		u.color = 2; //set to black
-		time++;
-		u.endTime = time;
-
-	}
-
 	
-	public void DFS() {
-		time = -1; 
-		for (int i = 0; i < dimension; i++) {
-			for (int j = 0; j < dimension; j++) {
-				if (vertexList[i][j].color == 0 && !vertexList[i][j].equals(endVertex)) { //if the vertex is white and not the end
-					DFS_Visit(vertexList[i][j]);
+	public void DFS(Vertex s) {
+		int traverseO = 1;  
+		Stack<Vertex> q = new Stack<>();
+		q.push(s);
+		while (!q.isEmpty() && !q.peek().equals(endVertex)) { //while we aren't at the end
+			Vertex u = q.pop();
+			for (int i = 0; i < u.neighbors.length; i++) {
+				Vertex v = u.neighbors[i];
+				int direction = u.vertexRelationship(v);
+				if ((u.walls[direction] == 0) && v != null && v.color == 0) { //if the wall is broken and it's not null and it hasn't been visited
+					v.color = 1;
+					if (v.traverseOrder == 0){ //if this is the first time it has been visited 
+	    				if (traversed[traverseO] == 0){ //if this number hasn't been used 
+	    					v.traverseOrder = traverseO;
+	    					traversed[traverseO] = 1;	//set it to used 
+	    				} else {		//if the number has been used 
+	    					traverseO++;
+	    					v.traverseOrder = traverseO;
+	    					traversed[traverseO] = 1; //set it to used 
+	    				}
+	    			}
+					v.distance = u.distance + 1;
+					v.pi = u;
+					q.push(v);
 				}
 			}
+			u.color = 2;
 		}
 	}
-
+	
 	public void BFS(Vertex s) {
 		int traverseO = 1;  
 		Queue<Vertex> q = new LinkedList<>();
@@ -403,7 +399,7 @@ public class Graph {
 	/*
 	 * Slightly more complicated in order to print the grid in a way that makes
 	 * it easy to read Prints all the top walls, the left and right, and the
-	 * bottom row
+	 * bottom row for empty Grid
 	 */
 	public String printGrid() {
 		String grid = "";
@@ -455,9 +451,9 @@ public class Graph {
 
 						// print label
 						// grid += v.label;
-						if (v.startTime > 1000) {
+						if (v.startTime > 1000) { // don't print label
 							grid += " ";
-						} else { // don't print label
+						} else { 
 							grid += ((v.startTime % 10));
 						}
 						// grid += " ";
@@ -494,7 +490,7 @@ public class Graph {
 	/*
 	 * Slightly more complicated in order to print the grid in a way that makes
 	 * it easy to read Prints all the top walls, the left and right, and the
-	 * bottom row. prints for BFS
+	 * bottom row. prints for BFS and DFS
 	 */
 	public String printGrid1() {
 		String grid = "";
@@ -683,13 +679,13 @@ public class Graph {
 	
 	
 	public static void main(String[] args) {
-		Graph g = new Graph(8);
+		Graph g = new Graph(4);
 		g.generateMaze();
 		System.out.println("Grid: ");
 		String grid = g.printGrid();
 		System.out.println(grid);
-		g.DFS();
-		String aGrid = g.printGrid();
+		g.DFS(g.vertexList[0][0]);
+		String aGrid = g.printGrid1();
 		System.out.println();
 		System.out.println("DFS");
 		System.out.println(aGrid);
@@ -698,7 +694,7 @@ public class Graph {
 		System.out.println();
 		System.out.println(dGrid);
 		
-		Graph g1 = new Graph(8);
+		Graph g1 = new Graph(4);
 		g1.generateMaze();
 		g1.BFS(g1.vertexList[0][0]);
 		String bGrid = g1.printGrid1();
