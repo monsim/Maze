@@ -21,21 +21,17 @@ public class Graph {
 	
 	class Vertex {
 		public int label; // to hold the name / number of the vertex
-		Vertex[] neighbors; // array of neighbors
-		int[] walls;
+		Vertex[] neighbors; // array of neighbors, adjacency list
+		int[] walls; //array of walls, -1 edge of maze, 0 broken wall, 1 intact wall, 4 entry/exit
 		int color; // white 0, grey 1, black 2
 		Vertex pi; // parent
 		int startTime; // found time when it turns grey
 		int endTime; // when it turns black
 		int distance; // ADDED
-		boolean inPath; 
-		int traverseOrder;
+		boolean inPath; //true if the Vertex is in the solution path and false if it is not
+		int traverseOrder; //the order in which the vertex is traversed while solving
 
-		/*
-		 * array of walls. -1 representing edge of maze, 0 broken wall (no
-		 * wall), and 1 intact wall, and 4 representing entry/exit
-		 */
-
+		
 		public Vertex(int lab) {
 			label = lab;
 			/*
@@ -52,11 +48,14 @@ public class Graph {
 			startTime = Integer.MAX_VALUE;
 			endTime = Integer.MAX_VALUE;
 			pi = null;
-			distance = 0; // ADDED
+			distance = 0; 
 			inPath = false;
 			traverseOrder = 0;
 		}
 
+		/*
+		 * checks if all walls intact
+		 */
 		public boolean allWallsIntact() {
 			for (int i = 0; i < walls.length; i++) {
 				if (walls[i] == 0) {
@@ -65,13 +64,17 @@ public class Graph {
 			}
 			return true;
 		}
-
+		
+		/*
+		 * sets all walls intact
+		 */
 		public void setAllWallsIntact() {
 			for (int i = 0; i < walls.length; i++) {
 				walls[i] = 1;
 			}
 		}
 
+		
 		public void breakUpWall() {
 			if (walls[0] != -1)
 				walls[0] = 0;
@@ -124,6 +127,9 @@ public class Graph {
 			return this.neighbors[2];
 		}
 
+		/*
+		 * finds the relationship between this vertex and vertex v
+		 */
 		public int vertexRelationship(Vertex v) {
 			if (getUp() != null && getUp().equals(v)) {
 				return 0;
@@ -135,23 +141,16 @@ public class Graph {
 				return 3;
 			}
 		}
-
-		public void printWalls() {
-			for (int i = 0; i < walls.length; i++) {
-				System.out.println(walls[i]);
-			}
-		}
-
 	}
 
-	Vertex vertexList[][];
-	int amountVertices;
-	int dimension; // dimensions
+	Vertex vertexList[][];  //2d array of the vertices
+	int amountVertices; //total vertices in maze
+	int dimension; // dimension of maze
 	private Random myRandGen; // random number generator
-	private Vertex startVertex;
-	private Vertex endVertex;
-	int time;
-	int[] traversed;
+	private Vertex startVertex; //start of maze
+	private Vertex endVertex; //end of maze
+	int time; //time used for dfs
+	int[] traversed; //array either 0 or 1. 0 means that order # hasn't been selected and 1 means it has been
 	
 	/**
 	 * Constructor for this program takes in the dimensions of the maze It also
@@ -159,8 +158,7 @@ public class Graph {
 	 *
 	 * *** calls method to fill the graph with n*n rooms
 	 *
-	 * @param dimension_in
-	 *            as number of rows and columns
+	 * @param dimension_in as number of rows and columns
 	 */
 
 	public Graph(int dimension_in) {
@@ -181,74 +179,68 @@ public class Graph {
 		myRandGen = new java.util.Random(0); // seed is 0
 		startVertex = vertexList[0][0]; // set startVertex to top left
 		endVertex = vertexList[dimension - 1][dimension - 1]; // set endVertex to bottom right
-		traversed = new int[dimension*dimension];
-		// populateGraph();
+		traversed = new int[dimension*dimension]; 
 	}
 
 	
-	
+	/*
+	 * sets the path of the solution using the parent and working backwards
+	 */
 	public void setPath(){
 		Vertex current = vertexList[dimension-1][dimension-1];
-//		System.out.println("PARENT OF " + vertexList[1][3].label + " IS: " + vertexList[1][3].pi.label);
-//		System.out.println("PARENT OF " + vertexList[1][2].label + " IS: " + vertexList[1][2].pi.label);
 		while (current != null){
 			current.inPath = true;
 			current = current.pi;
 		}
-		vertexList[0][0].inPath = true;
 	}
 	
 	
 	/*
-	 * makes all vertices in vertex list to white (0)
+	 * resets graph
+	 * makes all vertices in vertex list to white, changes start and end times back to infinity, distance from source to 0
 	 */
 	public void graphReset() {
-		// populateGraph();
 		for (int i = 0; i < dimension; i++) {
 			for (int j = 0; j < dimension; j++) {
 				vertexList[i][j].color = 0;
 				vertexList[i][j].pi = null;
-				vertexList[i][j].startTime = Integer.MAX_VALUE;
+				vertexList[i][j].startTime = Integer.MAX_VALUE; //infinity
 				vertexList[i][j].endTime = Integer.MAX_VALUE;
-				vertexList[i][j].distance = 0; // ADDED
+				vertexList[i][j].distance = 0; 
 			}
 		}
-		startVertex.walls[0] = 4;
-		endVertex.walls[2] = 4;
+		startVertex.walls[0] = 4; //sets startVertex up wall as entry point
+		endVertex.walls[2] = 4; //sets endVertex down wall as exit point
 	}
 
+	/*
+	 * recursive helper method used for dfs
+	 */
 	public void DFS_Visit(Vertex u) {
-		u.color = 1;
+		u.color = 1; //set to grey
 
 		time++;
 		u.startTime = time;
 		for (int i = 0; i < u.neighbors.length; i++) {
 			Vertex v = u.neighbors[i];
-			int direction = u.vertexRelationship(v); // relationship between u
-														// and v
-			if ((v != null) && v.color == 0 && (u.walls[direction] == 0)) {
+			int direction = u.vertexRelationship(v); // relationship between u and v
+			if ((v != null) && v.color == 0 && (u.walls[direction] == 0)) { //if node hasn't been visited and walls is not intact
 				v.pi = u;
 				DFS_Visit(v);
 			}
 		}
-		u.color = 2;
+		u.color = 2; //set to black
 		time++;
 		u.endTime = time;
 
 	}
 
+	
 	public void DFS() {
-		// for (int i = 0; i < dimension; i++){
-		// for (int j = 0; j < dimension; j++){
-		// vertexList[i][j].color = 0;
-		// }
-		// }
-		// graphReset();
-		// populateGraph();
-		time = -1; // instance variable
+		time = -1; 
 		for (int i = 0; i < dimension; i++) {
 			for (int j = 0; j < dimension; j++) {
-				if (vertexList[i][j].color == 0 && !vertexList[i][j].equals(endVertex)) {
+				if (vertexList[i][j].color == 0 && !vertexList[i][j].equals(endVertex)) { //if the vertex is white and not the end
 					DFS_Visit(vertexList[i][j]);
 				}
 			}
@@ -256,34 +248,30 @@ public class Graph {
 	}
 
 	public void BFS(Vertex s) {
-
-		// graphReset();
-		// populateGraph();
-		int traverseO = 1;
+		int traverseO = 1;  
 		Queue<Vertex> q = new LinkedList<>();
 		q.add(s);
-		while (!q.isEmpty() && !q.peek().equals(endVertex)) {
+		while (!q.isEmpty() && !q.peek().equals(endVertex)) { //while we aren't at the end
 			Vertex u = q.remove();
 			for (int i = 0; i < u.neighbors.length; i++) {
 				Vertex v = u.neighbors[i];
 				int direction = u.vertexRelationship(v);
-				if ((u.walls[direction] == 0) && v != null && v.color == 0) {
+				if ((u.walls[direction] == 0) && v != null && v.color == 0) { //if the wall is broken and it's not null and it hasn't been visited
 					v.color = 1;
-					if (v.traverseOrder == 0){
-	    				if (traversed[traverseO] == 0){
+					if (v.traverseOrder == 0){ //if this is the first time it has been visited 
+	    				if (traversed[traverseO] == 0){ //if this number hasn't been used 
 	    					v.traverseOrder = traverseO;
-	    					traversed[traverseO] = 1;
-	    				} else {
+	    					traversed[traverseO] = 1;	//set it to used 
+	    				} else {		//if the number has been used 
 	    					traverseO++;
 	    					v.traverseOrder = traverseO;
-	    					traversed[traverseO] = 1;
+	    					traversed[traverseO] = 1; //set it to used 
 	    				}
 	    			}
 					v.distance = u.distance + 1;
 					v.pi = u;
 					q.add(v);
 				}
-				// }
 			}
 			u.color = 2;
 		}
@@ -351,7 +339,6 @@ public class Graph {
 
 	void generateMaze() {
 		/*
-		 * 
 		 * create a CellStack (LIFO) to hold a list of cell locations set
 		 * TotalCells= number of cells in grid choose the starting cell and call
 		 * it CurrentCell set VisitedCells = 1 while VisitedCells < TotalCells
@@ -371,25 +358,11 @@ public class Graph {
 		Vertex currentCell = vertexList[0][0];
 		int visitedCells = 1;
 		while (visitedCells < totalCells) {
-			// Vertex neighborsIntact[] = new Vertex[4];
 			ArrayList<Vertex> neighborsIntact = new ArrayList<Vertex>();
-			// int index = 0; //index of neighborsIntact[]
-			// for loop goes through all the neighbors
-			// System.out.println("size of currentCell.neighbors " +
-			// currentCell.neighbors.length);
 			for (int i = 0; i < currentCell.neighbors.length; i++) {
 				Vertex neighbor = currentCell.neighbors[i];
-				// System.out.println("printing neighbors");
-				// for (int j = 0; j < currentCell.neighbors.length; j++){
-				// if (currentCell.neighbors[j] != null)
-				// System.out.println(currentCell.neighbors[j].label);
-				// }
 				if (neighbor != null) {
 					if (neighbor.allWallsIntact()) {
-						// System.out.println("NEIGHBOR ADDING PRINT WALLS " +
-						// neighbor.label);
-						// neighbor.printWalls();
-						// System.out.println("adding wall");
 						neighborsIntact.add(neighbor);
 					}
 				}
@@ -399,7 +372,6 @@ public class Graph {
 				// rand tells you which vertex you are knocking down a wall between
 				int rand = (int) (myRandom() * neighborsIntact.size());
 				Vertex knockDown = neighborsIntact.get(rand);
-				// System.out.println("knockDown " + knockDown.label);
 				int relationship = currentCell.vertexRelationship(knockDown); // finds relationship between current and knockDown
 				if (relationship == 0) {// knockDown is above currentCell
 					currentCell.breakUpWall();
@@ -426,18 +398,6 @@ public class Graph {
 			}
 		}
 
-	}
-
-	public String findLocation(Vertex v) {
-		String toReturn = "";
-		for (int i = 0; i < vertexList.length; i++) {
-			for (int j = 0; j < vertexList.length; j++) {
-				if (v.label == vertexList[i][j].label) {
-					toReturn += Integer.toString(i) + Integer.toString(j);
-				}
-			}
-		}
-		return toReturn;
 	}
 
 	/*
@@ -669,7 +629,7 @@ public class Graph {
 						else if (v.equals(startVertex)){
 							grid += "#";
 						}
-						else if (v.inPath && v.getUp() != null && v.getUp().inPath)
+						else if (v.inPath && v.getUp() != null && v.getUp().inPath) //makes sure the one above is in path too 
 							grid += "#";
 						else {
 							grid += " ";
@@ -738,7 +698,6 @@ public class Graph {
 		System.out.println();
 		System.out.println(dGrid);
 		
-
 		Graph g1 = new Graph(8);
 		g1.generateMaze();
 		g1.BFS(g1.vertexList[0][0]);
