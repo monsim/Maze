@@ -1,4 +1,4 @@
-package sjsu.ma.cs146.project4;
+package sjsu.magalasemwota.cs146.project4;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ public class Graph {
 		Vertex pi; // parent
 		int startTime; // found time when it turns grey
 		int endTime; // when it turns black
-		int distance; // ADDED
+		int distance; 
 		boolean inPath; //true if the Vertex is in the solution path and false if it is not
 		int traverseOrder; //the order in which the vertex is traversed while solving
 
@@ -35,18 +35,17 @@ public class Graph {
 		public Vertex(int lab) {
 			label = lab;
 			/*
-			 * index correspondance for neighbors 0 = up 1 = right 2 = down 3 =
-			 * left
+			 * index correspondence for neighbors 0 = up 1 = right 2 = down 3 = left
 			 */
 			neighbors = new Vertex[4];
 			walls = new int[4];
 			/*
-			 * index correspondance for walls 0 = up wall 1 = right wall 2 =
-			 * down wall 3 = left wall
+			 * index correspondence for walls 0 = up wall;  1 = right wall; 
+			 * 2 = down wall;  3 = left wall
 			 */
 			setAllWallsIntact();
-			startTime = Integer.MAX_VALUE;
-			endTime = Integer.MAX_VALUE;
+			startTime = Integer.MAX_VALUE; //start time = infinity
+			endTime = Integer.MAX_VALUE; //end time = infinity
 			pi = null;
 			distance = 0; 
 			inPath = false;
@@ -75,6 +74,9 @@ public class Graph {
 		}
 
 		
+		/*
+		 * Methods to break walls
+		 */
 		public void breakUpWall() {
 			if (walls[0] != -1)
 				walls[0] = 0;
@@ -95,6 +97,10 @@ public class Graph {
 				walls[3] = 0;
 		}
 
+		
+		/*
+		 * Methods to set neighbors 
+		 */
 		public void setLeft(Vertex v) {
 			neighbors[3] = v;
 		}
@@ -111,6 +117,10 @@ public class Graph {
 			neighbors[2] = v;
 		}
 
+		
+		/*
+		 * Methods to get neighbors 
+		 */
 		public Vertex getLeft() {
 			return this.neighbors[3];
 		}
@@ -185,6 +195,7 @@ public class Graph {
 	
 	/*
 	 * sets the path of the solution using the parent and working backwards
+	 * useful for printing the DFS and BFS 
 	 */
 	public void setPath(){
 		Vertex current = vertexList[dimension-1][dimension-1];
@@ -197,7 +208,7 @@ public class Graph {
 	
 	/*
 	 * resets graph
-	 * makes all vertices in vertex list to white, changes start and end times back to infinity, distance from source to 0
+	 * makes all vertices in vertex list to white, changes start and end times back to infinity, distance from source to 0  
 	 */
 	public void graphReset() {
 		for (int i = 0; i < dimension; i++) {
@@ -213,6 +224,12 @@ public class Graph {
 		endVertex.walls[2] = 4; //sets endVertex down wall as exit point
 	}
 	
+	
+	/**
+	 * DFS Solution
+	 * Solves the maze using Depth-first search, and uses a stack. 
+	 * @param s - the starting vertex - the root
+	 */
 	public void DFS(Vertex s) {
 		int traverseO = 1;  
 		Stack<Vertex> q = new Stack<>();
@@ -223,7 +240,7 @@ public class Graph {
 				Vertex v = u.neighbors[i];
 				int direction = u.vertexRelationship(v);
 				if ((u.walls[direction] == 0) && v != null && v.color == 0) { //if the wall is broken and it's not null and it hasn't been visited
-					v.color = 1;
+					v.color = 1; //color = grey
 					if (v.traverseOrder == 0){ //if this is the first time it has been visited 
 	    				if (traversed[traverseO] == 0){ //if this number hasn't been used 
 	    					v.traverseOrder = traverseO;
@@ -239,10 +256,17 @@ public class Graph {
 					q.push(v);
 				}
 			}
-			u.color = 2;
+			u.color = 2; //color = black
 		}
 	}
 	
+	
+	/**
+	 * BFS: Breadth-first Search solution to the maze 
+	 * uses a queue 
+	 * 
+	 * @param s - the starting vertex - the root
+	 */
 	public void BFS(Vertex s) {
 		int traverseO = 1;  
 		Queue<Vertex> q = new LinkedList<>();
@@ -253,7 +277,7 @@ public class Graph {
 				Vertex v = u.neighbors[i];
 				int direction = u.vertexRelationship(v);
 				if ((u.walls[direction] == 0) && v != null && v.color == 0) { //if the wall is broken and it's not null and it hasn't been visited
-					v.color = 1;
+					v.color = 1; //color = grey
 					if (v.traverseOrder == 0){ //if this is the first time it has been visited 
 	    				if (traversed[traverseO] == 0){ //if this number hasn't been used 
 	    					v.traverseOrder = traverseO;
@@ -269,12 +293,13 @@ public class Graph {
 					q.add(v);
 				}
 			}
-			u.color = 2;
+			u.color = 2; //color = black
 		}
 	}
 
 	/*
 	 * populates graph to the dimension provided in the constructor of graph
+	 * also sets the neighbors and walls of the vertices 
 	 */
 	public void populateGraph() {
 		for (int i = 0; i < dimension; i++) {
@@ -287,8 +312,8 @@ public class Graph {
 				}
 
 				else {
-					mine.setUp(vertexList[i - 1][j]);
-					mine.neighbors[0] = vertexList[i - 1][j];
+					mine.setUp(vertexList[i - 1][j]); //setting the up wall
+					mine.neighbors[0] = vertexList[i - 1][j]; //setting up neighbor
 				}
 
 				if (j == 0) {
@@ -333,7 +358,12 @@ public class Graph {
 		return myRandGen.nextDouble();
 	}
 
+	
+	/**
+	 * Generates a pseudo-random perfect maze. 
+	 */
 	void generateMaze() {
+		//the general algorithm
 		/*
 		 * create a CellStack (LIFO) to hold a list of cell locations set
 		 * TotalCells= number of cells in grid choose the starting cell and call
@@ -345,10 +375,13 @@ public class Graph {
 		 * entry off the CellStack make it CurrentCell
 		 */
 
-		graphReset();
-		populateGraph();
-		startVertex.walls[0] = 4;
+		graphReset(); //first reset the graph
+		populateGraph(); 
+		
+		//4 is a special designation for starting and ending vertices
+		startVertex.walls[0] = 4; 
 		endVertex.walls[2] = 4;
+		
 		Stack<Vertex> cellStack = new Stack<>();
 		int totalCells = amountVertices;
 		Vertex currentCell = vertexList[0][0];
@@ -397,9 +430,8 @@ public class Graph {
 	}
 
 	/*
-	 * Slightly more complicated in order to print the grid in a way that makes
-	 * it easy to read Prints all the top walls, the left and right, and the
-	 * bottom row for empty Grid
+	 * Prints empty grid
+	 * Prints all the top walls, the left and right, and the bottom row for an empty Grid
 	 */
 	public String printGrid() {
 		String grid = "";
@@ -417,15 +449,15 @@ public class Graph {
 				// 3 = bottom
 
 				if (layer == 1) {
-					grid += "+";
+					grid += "+"; //first symbol of layer 1
 				}
 
 				if (layer == 2) {
-					grid += "|";
+					grid += "|"; //first symbol of layer 2
 				}
 
 				if ((layer == 3) && (i == dimension - 1)) {
-					grid += "+";
+					grid += "+"; //first symbol of layer three
 				}
 
 				for (int j = 0; j < dimension; j++) {
@@ -444,19 +476,7 @@ public class Graph {
 
 					// layer two --> print left/right and label
 					else if (layer == 2) {
-						// if(v.walls[3] != 0) //if there is a left wall - 3
-						// grid += "|";
-						// else
-						// grid += " ";
-
-						// print label
-						// grid += v.label;
-						if (v.startTime > 1000) { // don't print label
-							grid += " ";
-						} else { 
-							grid += ((v.startTime % 10));
-						}
-						// grid += " ";
+						grid += " ";
 
 						if (v.walls[1] != 0) // right wall is 1
 							grid += "|";
@@ -468,7 +488,6 @@ public class Graph {
 					else if ((layer == 3) && (i == dimension - 1)) {
 						// down wall
 						// if there is an down wall, include symbol
-						// grid += "+";
 
 						if ((v.walls[2] != 0) && (v.walls[2] != 4)) // if -1, edge wall; if 1, inner  wall, 0 is broken wall, 4 is entrance/exit
 							grid += "-";
@@ -478,8 +497,6 @@ public class Graph {
 						grid += "+";
 
 					}
-
-					// grid += "\n";
 				}
 				grid += "\n";
 			}
@@ -488,9 +505,8 @@ public class Graph {
 	}
 
 	/*
-	 * Slightly more complicated in order to print the grid in a way that makes
-	 * it easy to read Prints all the top walls, the left and right, and the
-	 * bottom row. prints for BFS and DFS
+	 * Prints the grid for BFS and DFS - displays the numbers and the path
+	 * 
 	 */
 	public String printGrid1() {
 		String grid = "";
@@ -547,7 +563,7 @@ public class Graph {
 						} else {
 							grid += ((v.traverseOrder)%10);
 						}
-						// grid += " ";
+						
 
 						if (v.walls[1] != 0) // right wall is 1
 							grid += "|";
@@ -559,8 +575,6 @@ public class Graph {
 					else if ((layer == 3) && (i == dimension - 1)) {
 						// down wall
 						// if there is an down wall, include symbol
-						// grid += "+";
-
 						if ((v.walls[2] != 0) && (v.walls[2] != 4)) // if -1, edge wall; if 1, inner wall, 0 is broken wall, 4 is entry/exit
 							grid += "-";
 						else
@@ -569,9 +583,7 @@ public class Graph {
 						grid += "+";
 
 					}
-
-					// grid += "\n";
-				}
+			}
 				grid += "\n";
 			}
 		}
@@ -581,11 +593,9 @@ public class Graph {
 
 	
 	/*
-	 * Slightly more complicated in order to print the grid in a way that makes
-	 * it easy to read Prints all the top walls, the left and right, and the
-	 * bottom row. prints for BFS X
+	 * Prints the maze with the '#'s and not numbers - for BFS and DFS
 	 */
-	public String printGrid2() {
+	public String printHash() {
 		String grid = "";
 		// first print the top layer
 
@@ -643,8 +653,7 @@ public class Graph {
 						} else {
 							grid += " ";
 						}
-						// grid += " ";
-
+				
 						if (v.walls[1] != 0) // right wall is 1
 							grid += "|";
 						else
@@ -655,8 +664,7 @@ public class Graph {
 					else if ((layer == 3) && (i == dimension - 1)) {
 						// down wall
 						// if there is an down wall, include symbol
-						// grid += "+";
-
+						
 						if ((v.walls[2] != 0) && (v.walls[2] != 4)) // if -1, edge wall; if 1, inner wall, 0 is broken wall, 4 is entry/exit
 							grid += "-";
 						else if (v.inPath) 
@@ -667,8 +675,6 @@ public class Graph {
 						grid += "+";
 
 					}
-
-					// grid += "\n";
 				}
 				grid += "\n";
 			}
@@ -679,6 +685,7 @@ public class Graph {
 	
 	
 	public static void main(String[] args) {
+		//Runs the program - generate a maze, and solve it with BFS and DFS for a maze of size 4
 		Graph g = new Graph(4);
 		g.generateMaze();
 		System.out.println("Grid: ");
@@ -690,7 +697,7 @@ public class Graph {
 		System.out.println("DFS");
 		System.out.println(aGrid);
 		g.setPath();
-		String dGrid = g.printGrid2();
+		String dGrid = g.printHash();
 		System.out.println();
 		System.out.println(dGrid);
 		
@@ -702,7 +709,7 @@ public class Graph {
 		System.out.println("BFS");
 		System.out.println(bGrid);
 		g1.setPath();
-		String cGrid = g1.printGrid2();
+		String cGrid = g1.printHash();
 		System.out.println();
 		System.out.println(cGrid);
 	}

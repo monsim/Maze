@@ -1,0 +1,10 @@
+Overall, this project had it's upsides and downsides.  
+Generating and printing the maze took a significant amount of time with all it's intricacies.  
+While we had the pseudocode for a general BFS and DFS, it was difficult to alter the pseudocode to 
+fit this particular case of the maze.  Once we got BFS, DFS was simpler since it is essentially the 
+same with stack's instead of queue's.  One other difficulty we encountered was finding what to test.
+Since the maze was randomly generated, it was difficult to know what the actual maze was supposed to be. 
+In the end, we checked if the hash printing was the same for BFS and DFS.  
+Working in a group was not difficult and we were able to gain a new skill, GitHub, in the process.  
+By splitting the work evenly it provided an opportunity for each of us to work on something specific, 
+and we came together to generate and print the mazes.  

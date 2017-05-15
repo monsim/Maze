@@ -1,0 +1,1 @@
+To test this project, simply run GraphTest.java
