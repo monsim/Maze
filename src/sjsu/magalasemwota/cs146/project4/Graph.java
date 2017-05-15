@@ -682,35 +682,4 @@ public class Graph {
 
 		return grid;
 	}
-	
-	
-	public static void main(String[] args) {
-		//Runs the program - generate a maze, and solve it with BFS and DFS for a maze of size 4
-		Graph g = new Graph(4);
-		g.generateMaze();
-		System.out.println("Grid: ");
-		String grid = g.printGrid();
-		System.out.println(grid);
-		g.DFS(g.vertexList[0][0]);
-		String aGrid = g.printGrid1();
-		System.out.println();
-		System.out.println("DFS");
-		System.out.println(aGrid);
-		g.setPath();
-		String dGrid = g.printHash();
-		System.out.println();
-		System.out.println(dGrid);
-		
-		Graph g1 = new Graph(4);
-		g1.generateMaze();
-		g1.BFS(g1.vertexList[0][0]);
-		String bGrid = g1.printGrid1();
-		System.out.println();
-		System.out.println("BFS");
-		System.out.println(bGrid);
-		g1.setPath();
-		String cGrid = g1.printHash();
-		System.out.println();
-		System.out.println(cGrid);
-	}
 }
